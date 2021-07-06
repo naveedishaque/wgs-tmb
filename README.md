@@ -34,11 +34,11 @@ Summary:
 
 - Developed using perl 5, version 26, subversion 1 (v5.26.1) built for x86_64-linux-gnu-thread-multi
 - Perl lib GetOpts::Long
-- bedtools
+- bedtools v2.16.2
 
 ## conda setup
 
-`conda install perl=5.26.2 bedtools`
+`conda install perl=5.26.2 bedtools=2.16.2`
 
 ## Usage
 

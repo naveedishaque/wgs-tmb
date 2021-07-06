@@ -46,19 +46,23 @@ if (defined $indel_file){
 #  warn "indel file defined: \"$indel_file\"\n";
 }
 
+warn "SNV file: $snv_file\n";
+warn "INDEL file: $indel_file\n";
+warn "GENE file: $gene_file\n";
+
 ##### CALCULATE TMB #####
 
 # calculate total coding region of genome
 
 my $total_coding_bp = `bedtools sort -i $gene_file | bedtools merge -i - | awk -F'\t' '{sum=sum+\$3-\$2} END{print sum;}'`;
 chomp ($total_coding_bp);
-#warn "Total coding bp: $total_coding_bp\n";
+warn "Total region size bp: $total_coding_bp\n";
 
 # count number of coding SNVs not in dbSNP or 1kG (using the "ID=rs" tag) and not in cosmic (using the "tissue=" tag)
 
 my $num_coding_snvs = `grep -v "ID=rs" $snv_file | grep -v "tissue=" | intersectBed -u -a - -b $gene_file | wc -l`;
 chomp ($num_coding_snvs);
-#warn "Total coding SNVs: $num_coding_snvs\n";
+warn "Total somatic SNVs in defined regions (non dbSNP, non COSMIC): $num_coding_snvs\n";
 
 # count indels
 
@@ -67,10 +71,10 @@ my $num_coding_indels = 0;
 if (-e $indel_file){
  $num_coding_indels = `grep -v "ID=rs" $indel_file | grep -v "tissue=" | intersectBed -u -a - -b $gene_file | wc -l`;
  chomp ($num_coding_indels);
-# warn "Total coding indels: $num_coding_indels\n";
+ warn "Total somatic indels in defined regions (non dbSNP, non COSMIC): $num_coding_indels\n";
 }
 
-my $tmb = int(($num_coding_indels + $num_coding_snvs)*1000000/$total_coding_bp);
+my $tmb = (int(($num_coding_indels + $num_coding_snvs)*10000000/$total_coding_bp))/10;
 
-#warn "TMB: $tmb\n";
-print "$tmb\n";
+warn "TMB: $tmb\n";
+print "TMB\t$tmb\n";
